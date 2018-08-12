@@ -2,9 +2,10 @@
 
 import string
 import optparse
-import operator
+import hashlib
 
 hashing_algos = {32:"MD5", 40:"SHA1", 64:"SHA256"}
+
 
 def get_arguments():
     parser = optparse.OptionParser()
@@ -24,9 +25,11 @@ def get_arguments():
 
     return options
 
+
 def flatten(l):
     flat_list = [item for sublist in l for item in sublist]
     return flat_list
+
 
 def build_charset(options):
     if options.all:
@@ -43,11 +46,27 @@ def build_charset(options):
         charset.append(list(string.punctuation))
     return flatten(charset)
 
-def main():
 
+def bruteforce(charset, options):
+    if len(options.pwd-hash) == 32:
+        m = hashlib.md5
+    elif len(options.pwd-hash) == 40:
+        m = hashlib.sha1
+    elif len(options.pwd-hash) == 64:
+        m = hashlib.sha256
+
+    pwd_length = 2
+    if options.length:
+        pwd_length = int(options.length)
+
+    
+
+
+def main():
     options = get_arguments()
     charset = build_charset(options)
     print("charset : {0}".format(charset))
+
 
 if __name__ == "__main__":
     main()
