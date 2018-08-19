@@ -80,7 +80,7 @@ def main():
     if options.length:
         bruteforce("", 0, int(options.length), options.pwd_hash, charset)
     else:
-        for i in range(1, 26):
+        for i in range(1, 129): # Attempting from 1 to 128-character long passwords
             bruteforce("", 0, i, options.pwd_hash, charset)
 
     print("Not found")
