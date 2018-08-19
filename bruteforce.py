@@ -23,6 +23,8 @@ def get_arguments():
 
     if not options.pwd_hash:
         parser.error("Please inset a hash, use --help for more info")
+    elif len(options.pwd_hash) != 32 and len(options.pwd_hash) != 40 and len(options.pwd_hash) != 64:
+        parser.error("Invalid hash length (the program only supports MD5, SHA1 and SH256 hashing algorithms)")
 
     return options
 
@@ -51,12 +53,6 @@ def similar_hash(attempt, pwd_hash):
     elif len(pwd_hash) == 64:
         m = hashlib.sha256
 
-    # if attempt == "dddd":
-    #     print("attempt : {0}".format(attempt))
-    #     print("m(attempt).hexdigest() : {0}".format(m(str(attempt)).hexdigest()))
-    #     print("pwd_hash : {0}".format(pwd_hash))
-    #     raw_input("OK")
-
     if m(attempt).hexdigest() == pwd_hash:
         return True
     else:
@@ -64,10 +60,6 @@ def similar_hash(attempt, pwd_hash):
 
 
 def bruteforce(attempt, position, size, pwd_hash, charset):
-    # print(" ** size : {0}".format(size))
-    # print(" ** position : {0}".format(position))
-    # print(" ** charset : {0}".format(charset))
-    # print(" ** charset[0] : {0}".format(charset[0]))
     new_attempt = attempt
     if position < size:
         for i in range(len(charset)):
@@ -75,25 +67,23 @@ def bruteforce(attempt, position, size, pwd_hash, charset):
             new_attempt += charset[i]
             bruteforce(new_attempt, position+1, size, pwd_hash, charset)
     else:
-        print("[+] Testing with : {0}".format(new_attempt))
         if similar_hash(new_attempt, pwd_hash):
-            #print("Found : {0}".format(new_attempt))
-            sys.exit("Found : {0}".format(new_attempt))
+            print("Found : {0}".format(new_attempt))
+            sys.exit(0) # Success
 
 
 def main():
     options = get_arguments()
     charset = build_charset(options)
-    print("Charset : {0}".format(charset))
 
-    print("options.length : {0}".format(options.length))
-    print("options.pwd_hash : {0}".format(options.pwd_hash))
-
+    print("Loading...")
     if options.length:
         bruteforce("", 0, int(options.length), options.pwd_hash, charset)
     else:
-        for i in range(1, 10):
+        for i in range(1, 26):
             bruteforce("", 0, i, options.pwd_hash, charset)
+
+    print("Not found")
 
 
 if __name__ == "__main__":
